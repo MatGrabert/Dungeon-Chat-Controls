@@ -1,0 +1,52 @@
+{
+    "move": {
+        "up": {
+            "aliases": ["w", "hoch", "oben", "nord"]
+        },
+        "down": {
+            "aliases": ["s", "runter", "unten", "süd"]
+        },
+        "left": {
+            "aliases": ["l", "links", "west"]
+        },
+        "right": {
+            "aliases": ["r", "rechts", "ost"]
+        }
+    },
+    "quiz": {
+        "a": {
+            "aliases": ["a", "1", "eins"]
+        },
+        "b": {
+            "aliases": ["b", "2", "zwei"]
+        },
+        "c": {
+            "aliases": ["c", "3", "drei"]
+        },
+        "d": {
+            "aliases": ["d", "4", "vier"]
+        },
+        "next": {
+            "aliases": ["w","weiter"]
+        }
+    },
+    "menu": {
+        "open": {
+            "aliases": ["m", "menü"]
+            },
+        "close": {
+            "aliases": ["q", "schließen"]
+        },
+        "next": {
+            "aliases": ["n", "nächster"]
+        }
+    },
+    "game": {
+        "action": {
+            "aliases": ["e", "aktion"]
+        },
+        "notice": {
+            "aliases": ["h", "hinweis", "hinweiskarte"]
+        }
+    }
+}

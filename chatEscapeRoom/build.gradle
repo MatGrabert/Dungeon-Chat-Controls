@@ -1,0 +1,64 @@
+plugins {
+    id 'java-library'
+}
+
+
+dependencies {
+    api project(':dungeon')
+
+    // JUnit and Mockito for testing
+    testImplementation supportDependencies.junit
+    testRuntimeOnly supportDependencies.junitLauncher
+    testImplementation supportDependencies.mockito_core
+}
+
+sourceSets.main.java.srcDirs = ['src/']
+sourceSets.main.resources.srcDirs = ['assets/']
+sourceSets.test.java.srcDirs = ['test/']
+
+tasks.register('runChatEscapeRoom', JavaExec) {
+    group 'starter'
+    mainClass = 'starter.ChatEscapeRoom'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+processResources {
+    from new File(project(':dungeon').projectDir, '/assets')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+}
+
+tasks.register('buildChatEscapeRoom', Jar) {
+    group = 'jar'
+    archiveBaseName.set('ChatEscapeRoom')
+    archiveFileName.set('ChatEscapeRoom.jar')
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    // include compiled classes
+    from sourceSets.main.output
+    from project(':dungeon').sourceSets.main.output
+
+    // include dependencies
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    // include assets
+    into('assets') {
+        from new File(project(':dungeon').projectDir, '/assets')
+    }
+
+    // manifest
+    manifest {
+        attributes(
+            'Main-Class': 'starter.chatEscapeRoom'
+        )
+    }
+
+    // exclude signature files
+    exclude('META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+}

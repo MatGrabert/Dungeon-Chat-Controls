@@ -1,0 +1,10 @@
+{
+    "hello world?": {
+        "answers": ["foo", "baa", "wuppie", "fluppie"],
+        "correct": "b"
+    },
+    "Was versteht man unter OOP in der Informatik?": {
+        "answers": ["Online Organisation Padaborn", "Offener Operations Prozess", "Objektorientierte Programmierung", "Offene online Preise"],
+        "correct": "c"
+    }
+}
