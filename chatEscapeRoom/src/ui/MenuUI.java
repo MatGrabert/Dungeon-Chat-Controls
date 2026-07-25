@@ -3,14 +3,23 @@ package ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
-import core.Game;
 
+/** The ui of the menu. */
 public class MenuUI {
   private static Table rootTable;
   private static TextButton gameModeButton;
 
+  /**
+   * Creates a menu ui
+   *
+   * @param stage The stage to which the chat interface is added.
+   */
   public static void create(Stage stage) {
     Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
     float SIDE_LINE = 8f;
@@ -56,14 +65,29 @@ public class MenuUI {
     stage.addActor(rootTable);
   }
 
+  /**
+   * Sets the menu visible or invisible.
+   *
+   * @param visible True or false
+   */
   public static void setMenuVisible(Boolean visible) {
     rootTable.setVisible(visible);
   }
 
+  /**
+   * Gets the current game mode.
+   *
+   * @return String of the current game mode
+   */
   public static String getGameMode() {
     return gameModeButton.getText().toString();
   }
 
+  /**
+   * Sets the current game mode.
+   *
+   * @param gameMode The current game mode as String
+   */
   public static void setGameMode(String gameMode) {
     MenuUI.gameModeButton.setText(gameMode);
   }

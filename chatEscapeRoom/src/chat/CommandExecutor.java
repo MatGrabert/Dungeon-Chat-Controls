@@ -2,16 +2,14 @@ package chat;
 
 import contrib.components.QuizNpcComponent;
 import core.Game;
-import core.components.PlayerComponent;
 import core.components.PositionComponent;
 import core.utils.Direction;
 import core.utils.Point;
+import java.util.Objects;
 import quiz.Quiz;
 import systems.ChatMoveSystem;
 import ui.MenuUI;
 import ui.QuizUI;
-
-import java.util.Objects;
 
 /**
  * Executes recognized chat commands.
@@ -73,7 +71,7 @@ public class CommandExecutor {
   }
 
   private static void interact() {
-    if(nearQuizMaster(3)) {
+    if (nearQuizMaster(3)) {
       QuizUI.setQuizVisible(true);
     }
   }
@@ -81,17 +79,28 @@ public class CommandExecutor {
   private static boolean nearQuizMaster(float interactionDistance) {
     Boolean isNear = false;
 
-    Point playerPosition = Game.player().get().fetch(PositionComponent.class).map(PositionComponent::position).orElse(null);
-    Point npcPosition = Game.allEntities().filter(entity -> entity.isPresent(QuizNpcComponent.class)).findFirst().flatMap(entity -> entity.fetch(PositionComponent.class)).map(PositionComponent::position).orElse(null);
+    Point playerPosition =
+        Game.player()
+            .get()
+            .fetch(PositionComponent.class)
+            .map(PositionComponent::position)
+            .orElse(null);
+    Point npcPosition =
+        Game.allEntities()
+            .filter(entity -> entity.isPresent(QuizNpcComponent.class))
+            .findFirst()
+            .flatMap(entity -> entity.fetch(PositionComponent.class))
+            .map(PositionComponent::position)
+            .orElse(null);
 
     System.out.println(npcPosition);
 
-    if(playerPosition != null && npcPosition != null) {
+    if (playerPosition != null && npcPosition != null) {
       float dx = playerPosition.x() - npcPosition.x();
       float dy = playerPosition.y() - npcPosition.y();
       float distance = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-      if(distance < interactionDistance && distance > -interactionDistance) {
+      if (distance < interactionDistance && distance > -interactionDistance) {
         isNear = true;
       }
     }

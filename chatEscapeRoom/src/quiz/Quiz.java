@@ -2,14 +2,14 @@ package quiz;
 
 import com.badlogic.gdx.Gdx;
 import core.utils.JsonHandler;
-import ui.EndScreen;
-import ui.QuizUI;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import ui.EndScreen;
+import ui.QuizUI;
 
+/** The Quiz. */
 public class Quiz {
   private static final List<String> questions = new ArrayList<>();
   private static final List<QuizAnswers> quizAnswers = new ArrayList<>();
@@ -17,6 +17,7 @@ public class Quiz {
   private static boolean receivedAnAnswer = false;
   private static String givenAnswer;
 
+  /** Loads the quiz questions and answers from a JSON file into the lists. */
   public static void loadQuestions() {
     String quizPath = "quiz/quiz-qna.json";
     String contentAsString = Gdx.files.internal(quizPath).readString("UTF-8");
@@ -41,8 +42,13 @@ public class Quiz {
     QuizUI.setQuizVisible(false);
   }
 
+  /**
+   * This deals with a participant's answer to the quiz.
+   *
+   * @param answer The Answer of a participant.
+   */
   public static void handleAnswer(String answer) {
-    if(Objects.equals(answer, "next")) {
+    if (Objects.equals(answer, "next")) {
       receivedAnAnswer = false;
       nextQuestion();
     } else {
@@ -51,10 +57,10 @@ public class Quiz {
   }
 
   private static void evaluateResponse(char selectedAnswer) {
-    if(!receivedAnAnswer) {
+    if (!receivedAnAnswer) {
       char correctAnswer = quizAnswers.get(currentQuestion).correct().charAt(0);
 
-      if(Objects.equals(selectedAnswer, correctAnswer)) {
+      if (Objects.equals(selectedAnswer, correctAnswer)) {
         QuizUI.setAnswerColor(correctAnswer, true);
         hideAnswers(selectedAnswer, correctAnswer);
       } else {
@@ -86,12 +92,15 @@ public class Quiz {
   }
 
   private static void nextQuestion() {
-      resetQuiz();
-      EndScreen.addResultLabels(questions.get(currentQuestion), givenAnswer, letterToAnswer(quizAnswers.get(currentQuestion).correct().charAt(0)));
-      currentQuestion++;
+    resetQuiz();
+    EndScreen.addResultLabels(
+        questions.get(currentQuestion),
+        givenAnswer,
+        letterToAnswer(quizAnswers.get(currentQuestion).correct().charAt(0)));
+    currentQuestion++;
     if (currentQuestion == questions.size()) {
       QuizUI.setQuizVisible(false);
-      //EndScreen.setEndScreenVisible(true);
+      // EndScreen.setEndScreenVisible(true);
       currentQuestion = -1;
     } else {
       QuizUI.fillQuizUI(questions.get(currentQuestion), quizAnswers.get(currentQuestion).answers());

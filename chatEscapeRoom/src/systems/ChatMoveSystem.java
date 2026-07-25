@@ -1,13 +1,11 @@
 package systems;
 
-import contrib.components.CollideComponent;
 import core.Entity;
 import core.System;
 import core.components.PlayerComponent;
 import core.components.PositionComponent;
 import core.components.VelocityComponent;
 import core.utils.Direction;
-import core.utils.Point;
 import core.utils.Vector2;
 import core.utils.components.MissingComponentException;
 import java.util.ArrayDeque;
@@ -41,7 +39,9 @@ public class ChatMoveSystem extends System {
     Direction direction = commandQueue.poll();
 
     if (direction != null) {
-      filteredEntityStream().filter(entity -> entity.isPresent(PlayerComponent.class)).forEach(entity -> move(entity, direction));
+      filteredEntityStream()
+          .filter(entity -> entity.isPresent(PlayerComponent.class))
+          .forEach(entity -> move(entity, direction));
     }
   }
 
@@ -50,7 +50,6 @@ public class ChatMoveSystem extends System {
         entity
             .fetch(VelocityComponent.class)
             .orElseThrow(() -> MissingComponentException.build(entity, VelocityComponent.class));
-
 
     Vector2 velocity =
         switch (direction) {

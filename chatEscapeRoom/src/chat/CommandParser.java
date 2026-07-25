@@ -2,7 +2,11 @@ package chat;
 
 import com.badlogic.gdx.Gdx;
 import core.utils.JsonHandler;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Manages the reading and processing of the chat commands.

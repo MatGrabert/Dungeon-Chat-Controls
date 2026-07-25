@@ -4,7 +4,14 @@ import chat.CommandParser;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import core.systems.CameraSystem;
@@ -111,9 +118,9 @@ public class ChatUI {
 
     Table timeTable = new Table();
     gameTimeLabel = new Label("Verbleibende Zeit: 31:52", skin);
-    gameTimeLabel.setColor(1,0,0,1);
+    gameTimeLabel.setColor(1, 0, 0, 1);
     votingTimeLabel = new Label("Abstimm-Zeit: 0:03", skin);
-    votingTimeLabel.setColor(1,0,0,1);
+    votingTimeLabel.setColor(1, 0, 0, 1);
     timeTable.add(gameTimeLabel).right().top().pad(5);
     timeTable.row();
     timeTable.add(votingTimeLabel).right().top().pad(5);

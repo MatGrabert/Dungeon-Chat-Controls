@@ -1,21 +1,19 @@
 package starter;
 
 import chat.CommandParser;
-import chatEscapeRoom.level.*;
+import chatEscapeRoom.level.Level01;
+import chatEscapeRoom.level.Level02;
 import contrib.components.CollideComponent;
 import contrib.entities.EntityFactory;
 import contrib.systems.CollisionSystem;
 import core.Entity;
 import core.Game;
-import core.components.DrawComponent;
 import core.components.PlayerComponent;
 import core.components.PositionComponent;
-import core.level.DungeonLevel;
 import core.level.loader.DungeonLoader;
 import core.systems.MoveSystem;
 import core.systems.input.InputSystem;
 import core.utils.Tuple;
-import core.utils.components.path.SimpleIPath;
 import quiz.Quiz;
 import systems.ChatMoveSystem;
 import ui.ChatUI;
@@ -43,10 +41,6 @@ public class ChatEscapeRoom {
         () -> {
           DungeonLoader.addLevel(Tuple.of("level01", Level01.class));
           DungeonLoader.addLevel(Tuple.of("level02", Level02.class));
-          DungeonLoader.addLevel(Tuple.of("level03", Level03.class));
-          DungeonLoader.addLevel(Tuple.of("level04", Level04.class));
-          DungeonLoader.addLevel(Tuple.of("level05", Level05.class));
-          DungeonLoader.addLevel(Tuple.of("level06", Level06.class));
           Game.remove(InputSystem.class);
           Game.add(new ChatMoveSystem());
           Game.add(new MoveSystem());

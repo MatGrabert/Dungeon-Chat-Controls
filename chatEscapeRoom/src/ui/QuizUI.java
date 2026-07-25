@@ -7,9 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
-
 import java.util.List;
 
+/** The ui of the quiz. */
 public class QuizUI {
   private static Label answerALabel;
   private static Label answerBLabel;
@@ -19,10 +19,20 @@ public class QuizUI {
   private static Table rootTable;
   private static Label quizQuestionLabel;
 
+  /**
+   * Sets the timer of the timer label.
+   *
+   * @param timerLabel Time of the timer label
+   */
   public static void setTimerLabel(String timerLabel) {
     QuizUI.timerLabel.setText(timerLabel);
   }
 
+  /**
+   * Creates the quiz ui.
+   *
+   * @param stage The stage to which the chat interface is added.
+   */
   public static void create(Stage stage) {
     Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
     float SIDE_LINE = 8f;
@@ -83,57 +93,102 @@ public class QuizUI {
     stage.addActor(rootTable);
   }
 
+  /**
+   * Sets the quiz visible or invisible.
+   *
+   * @param visible True or false
+   */
   public static void setQuizVisible(Boolean visible) {
-      rootTable.setVisible(visible);
+    rootTable.setVisible(visible);
   }
 
-  public static void setAnswerAVisible(Boolean visible) {answerALabel.setVisible(visible);}
+  /**
+   * Sets answer a visible or invisible.
+   *
+   * @param visible True or false
+   */
+  public static void setAnswerAVisible(Boolean visible) {
+    answerALabel.setVisible(visible);
+  }
 
-  public static void setAnswerBVisible(Boolean visible) {answerBLabel.setVisible(visible);}
+  /**
+   * Sets answer b visible or invisible.
+   *
+   * @param visible True or false
+   */
+  public static void setAnswerBVisible(Boolean visible) {
+    answerBLabel.setVisible(visible);
+  }
 
-  public static void setAnswerCVisible(Boolean visible) {answerCLabel.setVisible(visible);}
+  /**
+   * Sets answer c visible or invisible.
+   *
+   * @param visible True or false
+   */
+  public static void setAnswerCVisible(Boolean visible) {
+    answerCLabel.setVisible(visible);
+  }
 
-  public static void setAnswerDVisible(Boolean visible) {answerDLabel.setVisible(visible);}
+  /**
+   * Sets answer d visible or invisible.
+   *
+   * @param visible True or false
+   */
+  public static void setAnswerDVisible(Boolean visible) {
+    answerDLabel.setVisible(visible);
+  }
 
+  /**
+   * Sets the color of an answer label. Red if false and green if correct.
+   *
+   * @param answer The given answer
+   * @param correct The correct answer
+   */
   public static void setAnswerColor(char answer, boolean correct) {
     switch (answer) {
-      case 'a'-> {
+      case 'a' -> {
         if (correct) {
-          answerALabel.setColor(0,1,0,1);
+          answerALabel.setColor(0, 1, 0, 1);
         } else {
-          answerALabel.setColor(1,0,0,1);
+          answerALabel.setColor(1, 0, 0, 1);
         }
       }
-      case 'b'-> {
+      case 'b' -> {
         if (correct) {
-          answerBLabel.setColor(0,1,0,1);
+          answerBLabel.setColor(0, 1, 0, 1);
         } else {
-          answerBLabel.setColor(1,0,0,1);
+          answerBLabel.setColor(1, 0, 0, 1);
         }
       }
-      case 'c'-> {
+      case 'c' -> {
         if (correct) {
-          answerCLabel.setColor(0,1,0,1);
+          answerCLabel.setColor(0, 1, 0, 1);
         } else {
-          answerCLabel.setColor(1,0,0,1);
+          answerCLabel.setColor(1, 0, 0, 1);
         }
       }
-      case 'd'-> {
+      case 'd' -> {
         if (correct) {
-          answerDLabel.setColor(0,1,0,1);
+          answerDLabel.setColor(0, 1, 0, 1);
         } else {
-          answerDLabel.setColor(1,0,0,1);
+          answerDLabel.setColor(1, 0, 0, 1);
         }
       }
-      case 'r' ->{
-        answerALabel.setColor(1,1,1,1);
-        answerBLabel.setColor(1,1,1,1);
-        answerCLabel.setColor(1,1,1,1);
-        answerDLabel.setColor(1,1,1,1);
+      case 'r' -> {
+        answerALabel.setColor(1, 1, 1, 1);
+        answerBLabel.setColor(1, 1, 1, 1);
+        answerCLabel.setColor(1, 1, 1, 1);
+        answerDLabel.setColor(1, 1, 1, 1);
       }
     }
   }
 
+  /**
+   * Fills the quiz with a new question and answers.
+   *
+   * @param question The new question
+   * @param answers The new answers
+   */
   public static void fillQuizUI(String question, List<String> answers) {
     QuizUI.quizQuestionLabel.setText(question);
     QuizUI.answerALabel.setText("A: " + answers.get(0));
