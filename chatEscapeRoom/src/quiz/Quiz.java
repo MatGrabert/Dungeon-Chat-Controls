@@ -19,6 +19,7 @@ public class Quiz {
   private static int currentQuestion = 0;
   private static boolean receivedAnAnswer = false;
   private static String givenAnswer;
+  private static boolean quizIsActive = false;
 
   /**
    * Loads the quiz questions and answers from a JSON file into the lists.
@@ -145,6 +146,7 @@ public class Quiz {
             true);
     currentQuestion++;
     if (currentQuestion == questions.size()) {
+      quizIsActive = false;
       Game.network().broadcast(new UIEvent("quiz close"), true);
       Game.network().broadcast(new UIEvent("endscreen open"), true);
       Game.network().broadcast(new UIEvent("chat close"), true);
@@ -169,5 +171,23 @@ public class Quiz {
     Game.network().broadcast(new QuizEvent("d", true, false, true), true);
 
     Game.network().broadcast(new QuizEvent("r", true, true, true), true);
+  }
+
+  /**
+   * Sets the quiz as active.
+   *
+   * @param isActive True if active
+   */
+  public static void setQuizIsActive(Boolean isActive) {
+    quizIsActive = isActive;
+  }
+
+  /**
+   * Gets if the quiz is active.
+   *
+   * @return True if the quiz is active
+   */
+  public static boolean isActive() {
+    return quizIsActive;
   }
 }

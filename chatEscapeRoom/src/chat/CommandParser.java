@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import quiz.Quiz;
 
 /**
  * Manages the reading and processing of the chat commands.
@@ -118,8 +119,11 @@ public class CommandParser {
   private static void checkInput(String input) {
     String foundCommand = null;
 
-    foundCommand = searchCommand(input, foundCommand, "move", moveCommands);
-    foundCommand = searchCommand(input, foundCommand, "quiz", quizCommands);
+    if (Quiz.isActive()) {
+      foundCommand = searchCommand(input, foundCommand, "quiz", quizCommands);
+    } else {
+      foundCommand = searchCommand(input, foundCommand, "move", moveCommands);
+    }
     foundCommand = searchCommand(input, foundCommand, "menu", menuCommands);
     foundCommand = searchCommand(input, foundCommand, "game", gameCommands);
 

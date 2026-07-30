@@ -65,6 +65,7 @@ public class CommandExecutor {
   private static void interact() {
     if (nearQuizMaster(3)) {
       Game.network().broadcast(new UIEvent("quiz open"), true);
+      Quiz.setQuizIsActive(true);
     }
   }
 

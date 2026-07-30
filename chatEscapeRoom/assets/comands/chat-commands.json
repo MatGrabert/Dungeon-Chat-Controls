@@ -7,10 +7,10 @@
             "aliases": ["s", "runter", "unten", "süd"]
         },
         "left": {
-            "aliases": ["l", "links", "west"]
+            "aliases": ["a", "links", "west"]
         },
         "right": {
-            "aliases": ["r", "rechts", "ost"]
+            "aliases": ["d", "rechts", "ost"]
         }
     },
     "quiz": {
@@ -27,7 +27,7 @@
             "aliases": ["d", "4", "vier"]
         },
         "next": {
-            "aliases": ["weiter"]
+            "aliases": ["w","weiter"]
         }
     },
     "menu": {
