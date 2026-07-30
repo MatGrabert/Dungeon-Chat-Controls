@@ -3,13 +3,11 @@ package chat;
 import contrib.components.QuizNpcComponent;
 import core.Game;
 import core.components.PositionComponent;
+import core.network.messages.UIEvent;
 import core.utils.Direction;
 import core.utils.Point;
-import java.util.Objects;
 import quiz.Quiz;
 import systems.ChatMoveSystem;
-import ui.MenuUI;
-import ui.QuizUI;
 
 /**
  * Executes recognized chat commands.
@@ -52,15 +50,9 @@ public class CommandExecutor {
 
   private static void handleMenu(String action) {
     switch (action) {
-      case "open" -> MenuUI.setMenuVisible(true);
-      case "close" -> MenuUI.setMenuVisible(false);
-      case "next" -> {
-        if (Objects.equals(MenuUI.getGameMode(), "Anarchie")) {
-          MenuUI.setGameMode("Demokratie");
-        } else {
-          MenuUI.setGameMode("Anarchie");
-        }
-      }
+      case "open" -> Game.network().broadcast(new UIEvent("menu open"), true);
+      case "close" -> Game.network().broadcast(new UIEvent("menu close"), true);
+      case "next" -> Game.network().broadcast(new UIEvent("menu next"), true);
     }
   }
 
@@ -72,7 +64,7 @@ public class CommandExecutor {
 
   private static void interact() {
     if (nearQuizMaster(3)) {
-      QuizUI.setQuizVisible(true);
+      Game.network().broadcast(new UIEvent("quiz open"), true);
     }
   }
 
@@ -80,7 +72,8 @@ public class CommandExecutor {
     Boolean isNear = false;
 
     Point playerPosition =
-        Game.player()
+        Game.allPlayers()
+            .findFirst()
             .get()
             .fetch(PositionComponent.class)
             .map(PositionComponent::position)
@@ -92,8 +85,6 @@ public class CommandExecutor {
             .flatMap(entity -> entity.fetch(PositionComponent.class))
             .map(PositionComponent::position)
             .orElse(null);
-
-    System.out.println(npcPosition);
 
     if (playerPosition != null && npcPosition != null) {
       float dx = playerPosition.x() - npcPosition.x();

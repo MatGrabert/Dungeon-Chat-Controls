@@ -1,5 +1,9 @@
 package core.network.codec;
 
+import core.network.codec.converters.ChatMessageConverter;
+import core.network.codec.converters.QuizEventConverter;
+import core.network.codec.converters.QuizMessageConverter;
+import core.network.codec.converters.UIEventConverter;
 import core.network.codec.converters.c2s.ConnectRequestConverter;
 import core.network.codec.converters.c2s.DialogResponseConverter;
 import core.network.codec.converters.c2s.InputMessageConverter;
@@ -56,5 +60,9 @@ public final class CoreConverters {
     registry.register(new DeltaSnapshotConverter());
     registry.register(new SoundPlayConverter());
     registry.register(new SoundStopConverter());
+    registry.register(new ChatMessageConverter());
+    registry.register(new UIEventConverter());
+    registry.register(new QuizEventConverter());
+    registry.register(new QuizMessageConverter());
   }
 }

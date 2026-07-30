@@ -27,7 +27,7 @@
             "aliases": ["d", "4", "vier"]
         },
         "next": {
-            "aliases": ["w","weiter"]
+            "aliases": ["weiter"]
         }
     },
     "menu": {

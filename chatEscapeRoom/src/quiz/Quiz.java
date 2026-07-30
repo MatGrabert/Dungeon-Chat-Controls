@@ -1,12 +1,15 @@
 package quiz;
 
 import com.badlogic.gdx.Gdx;
+import core.Game;
+import core.network.messages.QuizEvent;
+import core.network.messages.QuizMessage;
+import core.network.messages.UIEvent;
 import core.utils.JsonHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import ui.EndScreen;
 import ui.QuizUI;
 
 /** The Quiz. */
@@ -17,8 +20,12 @@ public class Quiz {
   private static boolean receivedAnAnswer = false;
   private static String givenAnswer;
 
-  /** Loads the quiz questions and answers from a JSON file into the lists. */
-  public static void loadQuestions() {
+  /**
+   * Loads the quiz questions and answers from a JSON file into the lists.
+   *
+   * @param clientLoads Fills the quiz ui, if the client loads questions
+   */
+  public static void loadQuestions(Boolean clientLoads) {
     String quizPath = "quiz/quiz-qna.json";
     String contentAsString = Gdx.files.internal(quizPath).readString("UTF-8");
     Map<String, Object> contentAsMap = JsonHandler.readJson(contentAsString);
@@ -38,8 +45,10 @@ public class Quiz {
       quizAnswers.add(new QuizAnswers(answers, correctAnswer));
     }
 
-    QuizUI.fillQuizUI(questions.get(currentQuestion), quizAnswers.get(currentQuestion).answers());
-    QuizUI.setQuizVisible(false);
+    if (clientLoads) {
+      QuizUI.fillQuizUI(questions.get(currentQuestion), quizAnswers.get(currentQuestion).answers());
+      QuizUI.setQuizVisible(false);
+    }
   }
 
   /**
@@ -61,11 +70,14 @@ public class Quiz {
       char correctAnswer = quizAnswers.get(currentQuestion).correct().charAt(0);
 
       if (Objects.equals(selectedAnswer, correctAnswer)) {
-        QuizUI.setAnswerColor(correctAnswer, true);
+        Game.network()
+            .broadcast(new QuizEvent(String.valueOf(correctAnswer), true, true, false), true);
         hideAnswers(selectedAnswer, correctAnswer);
       } else {
-        QuizUI.setAnswerColor(correctAnswer, true);
-        QuizUI.setAnswerColor(selectedAnswer, false);
+        Game.network()
+            .broadcast(new QuizEvent(String.valueOf(correctAnswer), true, true, false), true);
+        Game.network()
+            .broadcast(new QuizEvent(String.valueOf(selectedAnswer), false, true, false), true);
         hideAnswers(selectedAnswer, correctAnswer);
       }
       givenAnswer = letterToAnswer(selectedAnswer);
@@ -85,34 +97,77 @@ public class Quiz {
   }
 
   private static void hideAnswers(char selectedAnswer, char correctAnswer) {
-    QuizUI.setAnswerAVisible(selectedAnswer == 'a' || correctAnswer == 'a');
-    QuizUI.setAnswerBVisible(selectedAnswer == 'b' || correctAnswer == 'b');
-    QuizUI.setAnswerCVisible(selectedAnswer == 'c' || correctAnswer == 'c');
-    QuizUI.setAnswerDVisible(selectedAnswer == 'd' || correctAnswer == 'd');
+    Game.network()
+        .broadcast(
+            new QuizEvent(
+                "a",
+                selectedAnswer == correctAnswer,
+                false,
+                selectedAnswer == 'a' || correctAnswer == 'a'),
+            true);
+    Game.network()
+        .broadcast(
+            new QuizEvent(
+                "b",
+                selectedAnswer == correctAnswer,
+                false,
+                selectedAnswer == 'b' || correctAnswer == 'b'),
+            true);
+    Game.network()
+        .broadcast(
+            new QuizEvent(
+                "c",
+                selectedAnswer == correctAnswer,
+                false,
+                selectedAnswer == 'c' || correctAnswer == 'c'),
+            true);
+    Game.network()
+        .broadcast(
+            new QuizEvent(
+                "d",
+                selectedAnswer == correctAnswer,
+                false,
+                selectedAnswer == 'd' || correctAnswer == 'd'),
+            true);
   }
 
   private static void nextQuestion() {
     resetQuiz();
-    EndScreen.addResultLabels(
-        questions.get(currentQuestion),
-        givenAnswer,
-        letterToAnswer(quizAnswers.get(currentQuestion).correct().charAt(0)));
+    List<String> givenAnswerInList = new ArrayList<>();
+    givenAnswerInList.add(givenAnswer);
+    Game.network()
+        .broadcast(
+            new QuizMessage(
+                questions.get(currentQuestion),
+                givenAnswerInList,
+                letterToAnswer(quizAnswers.get(currentQuestion).correct().charAt(0)),
+                true),
+            true);
     currentQuestion++;
     if (currentQuestion == questions.size()) {
-      QuizUI.setQuizVisible(false);
-      // EndScreen.setEndScreenVisible(true);
+      Game.network().broadcast(new UIEvent("quiz close"), true);
+      Game.network().broadcast(new UIEvent("endscreen open"), true);
+      Game.network().broadcast(new UIEvent("chat close"), true);
       currentQuestion = -1;
     } else {
-      QuizUI.fillQuizUI(questions.get(currentQuestion), quizAnswers.get(currentQuestion).answers());
+      Game.network().broadcast(new UIEvent("quiz next"), true);
+      Game.network()
+          .broadcast(
+              new QuizMessage(
+                  questions.get(currentQuestion),
+                  quizAnswers.get(currentQuestion).answers(),
+                  quizAnswers.get(currentQuestion).correct(),
+                  false),
+              true);
     }
   }
 
   private static void resetQuiz() {
-    QuizUI.setAnswerAVisible(true);
-    QuizUI.setAnswerBVisible(true);
-    QuizUI.setAnswerCVisible(true);
-    QuizUI.setAnswerDVisible(true);
+    Game.network().broadcast(new QuizEvent("a", true, false, true), true);
+    Game.network().broadcast(new QuizEvent("b", true, false, true), true);
+    Game.network().broadcast(new QuizEvent("c", true, false, true), true);
+    Game.network().broadcast(new QuizEvent("d", true, false, true), true);
 
-    QuizUI.setAnswerColor('r', true);
+    Game.network().broadcast(new QuizEvent("r", true, true, true), true);
   }
 }

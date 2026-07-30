@@ -42,7 +42,20 @@ public class ChatMoveSystem extends System {
       filteredEntityStream()
           .filter(entity -> entity.isPresent(PlayerComponent.class))
           .forEach(entity -> move(entity, direction));
+    } else {
+      filteredEntityStream()
+          .filter(entity -> entity.isPresent(PlayerComponent.class))
+          .forEach(this::stopEntity);
     }
+  }
+
+  private void stopEntity(Entity entity) {
+    VelocityComponent velocityComponent =
+        entity
+            .fetch(VelocityComponent.class)
+            .orElseThrow(() -> MissingComponentException.build(entity, VelocityComponent.class));
+
+    velocityComponent.currentVelocity(Vector2.of(0, 0));
   }
 
   private void move(Entity entity, Direction direction) {

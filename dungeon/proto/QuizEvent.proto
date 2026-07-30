@@ -1,0 +1,14 @@
+
+syntax = "proto3";
+
+package dungeon.c2s;
+
+option java_multiple_files = true;
+option java_package = "core.network.proto";
+
+message QuizEvent {
+  string answer = 1;
+  bool correct = 2;
+  bool changeColor = 3;
+  bool setVisible = 4;
+}

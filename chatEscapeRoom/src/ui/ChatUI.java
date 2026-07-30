@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import core.Game;
+import core.network.messages.ChatMessage;
 import core.systems.CameraSystem;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ public class ChatUI {
   private TextField textField;
   private static Label votingTimeLabel;
   private static Label gameTimeLabel;
+  private Table rootTable;
   Table infoTable;
 
   /**
@@ -39,8 +42,8 @@ public class ChatUI {
   public void create(Stage stage) {
     float SIDE_LINE = 8f;
     Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+    rootTable = new Table();
 
-    Table rootTable = new Table();
     rootTable.setFillParent(true);
 
     Table chatTable = createChatTable(skin, SIDE_LINE);
@@ -188,9 +191,29 @@ public class ChatUI {
     String message = textField.getText().trim();
 
     if (!message.isEmpty()) {
-      CommandParser.parseChatInput(message);
-      textArea.appendText(message + "\n");
+      Game.network()
+          .send(
+              (short) 0, new ChatMessage((short) Game.network().assignedClientId(), message), true);
       textField.setText("");
     }
+  }
+
+  /**
+   * Adds a message to the chat.
+   *
+   * @param playerID The ID of the player who sends the message
+   * @param message The message which was sent
+   */
+  public void addMessage(short playerID, String message) {
+    textArea.appendText("Teilnehmer " + playerID + ": " + message + "\n");
+  }
+
+  /**
+   * Sets ui visible or invisible.
+   *
+   * @param visible True if invisible
+   */
+  public void setChatUIVisible(Boolean visible) {
+    rootTable.setVisible(visible);
   }
 }

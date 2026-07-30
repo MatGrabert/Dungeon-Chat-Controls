@@ -48,11 +48,12 @@ public class EndScreen {
           }
         });
 
-    tableInner.add(quitGameButton).expandX().pad(20);
+    tableInner.add(quitGameButton).expandX().fillX().center().pad(5);
     tableInner.row();
-    tableInner.add(title).expandX().fillX().pad(20);
+    tableInner.add(title).expandX().fillX().center().pad(5);
+    tableInner.row();
 
-    tableOuter.add(tableInner).expand().fill().pad(SIDE_LINE);
+    tableOuter.add(tableInner).expand().fillX().pad(SIDE_LINE);
 
     rootTable.add(tableOuter).expand().fill();
     rootTable.setVisible(false);
@@ -78,7 +79,9 @@ public class EndScreen {
    */
   public static void addResultLabels(String question, String giveAnswer, String correctAnswer) {
     String content = "Frage: " + question + " Antwort: " + giveAnswer + " Lösung: " + correctAnswer;
-    tableInner.add(new Label(content, skin)).left().pad(5);
+    Label resultLabel = new Label(content, skin);
+    resultLabel.setAlignment(Align.center);
+    tableInner.add(resultLabel).expandX().fillX().center().pad(5);
     tableInner.row();
   }
 }

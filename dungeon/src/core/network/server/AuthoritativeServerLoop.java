@@ -5,6 +5,7 @@ import static core.network.config.NetworkConfig.SERVER_DELTA_HISTORY_SIZE;
 import static core.network.config.NetworkConfig.SERVER_DELTA_SNAPSHOT_HZ;
 import static core.network.config.NetworkConfig.SERVER_TICK_HZ;
 
+import contrib.entities.CharacterClass;
 import contrib.entities.HeroBuilder;
 import contrib.entities.HeroController;
 import core.Entity;
@@ -233,12 +234,39 @@ public final class AuthoritativeServerLoop {
   }
 
   private void syncClientsToEntities() {
-    // Spawn Hero if TCP client exists but no entity is associated
-    for (ClientState state : net.connectedClients()) {
-      if (state.playerEntity().isEmpty()) {
-        state.playerEntity(spawnHeroForClient(state));
+    // Spawn one hero for the server
+    if (PreRunConfiguration.isServerHeroOwner()) {
+      Entity serverHero = Game.allPlayers().findFirst().orElseGet(this::spawnHeroForServer);
+
+      for (ClientState state : net.connectedClients()) {
+        if (state.playerEntity().isEmpty()) {
+          state.playerEntity(serverHero);
+        }
+      }
+    } else {
+      // Spawn Hero if TCP client exists but no entity is associated
+      for (ClientState state : net.connectedClients()) {
+        if (state.playerEntity().isEmpty()) {
+          state.playerEntity(spawnHeroForClient(state));
+        }
       }
     }
+  }
+
+  private Entity spawnHeroForServer() {
+    Entity hero =
+        HeroBuilder.builder()
+            .username("ServerHero")
+            .characterClass(CharacterClass.WIZARD)
+            .isLocalPlayer(false)
+            .build();
+    hero.fetch(PositionComponent.class)
+        .ifPresent(
+            positionComponent ->
+                positionComponent.position(
+                    Game.startTile().map(Tile::position).orElse(new Point(0, 0))));
+    Game.add(hero);
+    return hero;
   }
 
   private Entity spawnHeroForClient(ClientState state) {

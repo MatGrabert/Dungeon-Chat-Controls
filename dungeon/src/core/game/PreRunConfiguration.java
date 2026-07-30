@@ -30,6 +30,7 @@ public final class PreRunConfiguration {
   private static String NETWORK_SERVER_ADDRESS = "127.0.0.1";
   private static int NETWORK_PORT = 7777;
   private static String USERNAME = "Player";
+  private static Boolean SERVER_OWNS_HERO = false;
   private static CharacterClass MULTIPLAYER_CHARACTER_CLASS = null;
   private static List<CharacterClass> MULTIPLAYER_CHARACTER_CLASSES =
       List.of(CharacterClass.WIZARD);
@@ -415,5 +416,23 @@ public final class PreRunConfiguration {
     }
 
     MULTIPLAYER_CHARACTER_CLASSES = List.of(characterClasses);
+  }
+
+  /**
+   * Returns if the server owns the hero.
+   *
+   * @return True if the server owns the hero.
+   */
+  public static Boolean isServerHeroOwner() {
+    return SERVER_OWNS_HERO;
+  }
+
+  /**
+   * Sets the server as hero owner.
+   *
+   * @param serverOwnsHero True if the server should own the hero.
+   */
+  public static void setServerAsHeroOwner(Boolean serverOwnsHero) {
+    SERVER_OWNS_HERO = serverOwnsHero;
   }
 }

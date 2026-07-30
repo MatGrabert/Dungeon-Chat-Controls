@@ -47,7 +47,7 @@ public class ChatEscapeRoom {
           Game.add(new CollisionSystem());
           CommandParser.loadCommands();
           createUIs();
-          Quiz.loadQuestions();
+          Quiz.loadQuestions(true);
           hero = EntityFactory.newHero();
           hero.add(new CollideComponent());
           hero.add(new PositionComponent());
