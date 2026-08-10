@@ -3,9 +3,12 @@ package chat;
 import contrib.components.QuizNpcComponent;
 import core.Game;
 import core.components.PositionComponent;
+import core.network.messages.TimeMessage;
 import core.network.messages.UIEvent;
 import core.utils.Direction;
 import core.utils.Point;
+import java.util.Objects;
+import mode.DemocracyMode;
 import quiz.Quiz;
 import systems.ChatMoveSystem;
 
@@ -15,6 +18,7 @@ import systems.ChatMoveSystem;
  * <p>The commands are for the movement of the game character, etc.
  */
 public class CommandExecutor {
+  private static String mode = "Anarchie";
 
   /**
    * Executes the specified chat command.
@@ -52,7 +56,17 @@ public class CommandExecutor {
     switch (action) {
       case "open" -> Game.network().broadcast(new UIEvent("menu open"), true);
       case "close" -> Game.network().broadcast(new UIEvent("menu close"), true);
-      case "next" -> Game.network().broadcast(new UIEvent("menu next"), true);
+      case "next" -> {
+        Game.network().broadcast(new UIEvent("menu next"), true);
+        if (Objects.equals(mode, "Anarchie")) {
+          mode = "Demokratie";
+          DemocracyMode.setModeIsActive(true);
+          Game.network().broadcast(new TimeMessage("mode", DemocracyMode.getModeTime()), true);
+        } else {
+          DemocracyMode.setModeIsActive(false);
+          mode = "Anarchie";
+        }
+      }
     }
   }
 

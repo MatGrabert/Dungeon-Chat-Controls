@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import mode.DemocracyMode;
 import quiz.Quiz;
 
 /**
@@ -128,7 +129,11 @@ public class CommandParser {
     foundCommand = searchCommand(input, foundCommand, "game", gameCommands);
 
     if (foundCommand != null && !foundCommand.equals("INVALID")) {
-      CommandExecutor.execute(foundCommand.split(",")[0], foundCommand.split(",")[1]);
+      if (DemocracyMode.isModeActive()) {
+        DemocracyMode.addCommand(foundCommand);
+      } else {
+        CommandExecutor.execute(foundCommand.split(",")[0], foundCommand.split(",")[1]);
+      }
     }
   }
 

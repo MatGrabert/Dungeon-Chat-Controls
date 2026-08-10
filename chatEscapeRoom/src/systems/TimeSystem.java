@@ -2,6 +2,7 @@ package systems;
 
 import core.System;
 import core.game.PreRunConfiguration;
+import mode.DemocracyMode;
 import quiz.Quiz;
 import ui.ChatUI;
 import ui.QuizUI;
@@ -10,7 +11,7 @@ import ui.QuizUI;
 public class TimeSystem extends System {
   private static float gameTime = 3600;
   private static float quizTime = 9999;
-  private static float modeTime = 3;
+  private static float modeTime = 0;
   private static boolean isServer;
 
   /**
@@ -63,8 +64,10 @@ public class TimeSystem extends System {
   }
 
   private void checkModeTime() {
-    if (modeTime == 0) {
-      return;
+    if (modeTime == 0 && DemocracyMode.isModeActive()) {
+      modeTime = DemocracyMode.getModeTime();
+      DemocracyMode.resetTimer();
+      DemocracyMode.evaluate();
     }
   }
 
@@ -92,6 +95,7 @@ public class TimeSystem extends System {
       case "quiz" -> quizTime = time;
       case "mode" -> modeTime = time;
     }
+    java.lang.System.out.println("Test");
   }
 
   /**
