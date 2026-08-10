@@ -66,6 +66,7 @@ public class CommandExecutor {
     if (nearQuizMaster(3)) {
       Game.network().broadcast(new UIEvent("quiz open"), true);
       Quiz.setQuizIsActive(true);
+      Quiz.startTime();
     }
   }
 

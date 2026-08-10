@@ -19,6 +19,7 @@ import core.network.messages.ChatMessage;
 import core.systems.CameraSystem;
 import java.util.List;
 import java.util.Map;
+import systems.TimeSystem;
 
 /**
  * Represents the user interface for the game chat.
@@ -29,10 +30,35 @@ import java.util.Map;
 public class ChatUI {
   private TextArea textArea;
   private TextField textField;
-  private static Label votingTimeLabel;
+  private static Label modeTimeLabel;
   private static Label gameTimeLabel;
   private Table rootTable;
   Table infoTable;
+
+  /**
+   * Sets the time for the mode time.
+   *
+   * @param seconds Seconds left
+   */
+  public static void setModeTimeLabel(int seconds) {
+    String time = TimeSystem.formatTime(seconds);
+    if (seconds == 0) {
+      ChatUI.modeTimeLabel.setVisible(false);
+    } else {
+      ChatUI.modeTimeLabel.setVisible(true);
+      ChatUI.modeTimeLabel.setText("Abstimm-Zeit: " + time);
+    }
+  }
+
+  /**
+   * Sets the time for the game time.
+   *
+   * @param seconds Seconds and Minutes left
+   */
+  public static void setGameTimeLabel(int seconds) {
+    String time = TimeSystem.formatTime(seconds);
+    ChatUI.gameTimeLabel.setText("Verbleibende Zeit: " + time);
+  }
 
   /**
    * Creates the chat-user-interface and adds it to the stage.
@@ -120,13 +146,13 @@ public class ChatUI {
     addCommandLabels(infoTable, skin, "GAME", CommandParser.getGameCommands());
 
     Table timeTable = new Table();
-    gameTimeLabel = new Label("Verbleibende Zeit: 31:52", skin);
+    gameTimeLabel = new Label("Verbleibende Zeit: XX:XX", skin);
     gameTimeLabel.setColor(1, 0, 0, 1);
-    votingTimeLabel = new Label("Abstimm-Zeit: 0:03", skin);
-    votingTimeLabel.setColor(1, 0, 0, 1);
+    modeTimeLabel = new Label("Abstimm-Zeit: XX", skin);
+    modeTimeLabel.setColor(1, 0, 0, 1);
     timeTable.add(gameTimeLabel).right().top().pad(5);
     timeTable.row();
-    timeTable.add(votingTimeLabel).right().top().pad(5);
+    timeTable.add(modeTimeLabel).right().top().pad(5);
 
     gameTable.add(infoTable).expandX().left().top();
     gameTable.add(timeTable).right().top();
@@ -193,7 +219,9 @@ public class ChatUI {
     if (!message.isEmpty()) {
       Game.network()
           .send(
-              (short) 0, new ChatMessage((short) Game.network().assignedClientId(), message), true);
+              (short) Game.network().assignedClientId(),
+              new ChatMessage((short) Game.network().assignedClientId(), message),
+              true);
       textField.setText("");
     }
   }

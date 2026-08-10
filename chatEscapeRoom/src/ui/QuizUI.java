@@ -24,7 +24,7 @@ public class QuizUI {
    *
    * @param timerLabel Time of the timer label
    */
-  public static void setTimerLabel(String timerLabel) {
+  public static void setTimerLabel(int timerLabel) {
     QuizUI.timerLabel.setText(timerLabel);
   }
 

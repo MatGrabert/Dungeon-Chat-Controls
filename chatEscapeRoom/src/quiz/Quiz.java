@@ -4,12 +4,14 @@ import com.badlogic.gdx.Gdx;
 import core.Game;
 import core.network.messages.QuizEvent;
 import core.network.messages.QuizMessage;
+import core.network.messages.TimeMessage;
 import core.network.messages.UIEvent;
 import core.utils.JsonHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import systems.TimeSystem;
 import ui.QuizUI;
 
 /** The Quiz. */
@@ -20,6 +22,7 @@ public class Quiz {
   private static boolean receivedAnAnswer = false;
   private static String givenAnswer;
   private static boolean quizIsActive = false;
+  private static int quizTime = 10;
 
   /**
    * Loads the quiz questions and answers from a JSON file into the lists.
@@ -147,9 +150,7 @@ public class Quiz {
     currentQuestion++;
     if (currentQuestion == questions.size()) {
       quizIsActive = false;
-      Game.network().broadcast(new UIEvent("quiz close"), true);
-      Game.network().broadcast(new UIEvent("endscreen open"), true);
-      Game.network().broadcast(new UIEvent("chat close"), true);
+      closeGameUIs();
       currentQuestion = -1;
     } else {
       Game.network().broadcast(new UIEvent("quiz next"), true);
@@ -161,7 +162,24 @@ public class Quiz {
                   quizAnswers.get(currentQuestion).correct(),
                   false),
               true);
+      startTime();
     }
+  }
+
+  /** Starts the quiz timer of the both sides client and server. */
+  public static void startTime() {
+    // Sets server (own) timer
+    TimeSystem.setTimer("quiz", quizTime);
+    // Sets client timer
+    Game.network().broadcast(new TimeMessage("quiz", quizTime), true);
+  }
+
+  /** Closes all game uis an opens the end screen. */
+  public static void closeGameUIs() {
+    Game.network().broadcast(new UIEvent("quiz close"), true);
+    Game.network().broadcast(new UIEvent("chat close"), true);
+    Game.network().broadcast(new UIEvent("menu close"), true);
+    Game.network().broadcast(new UIEvent("endscreen open"), true);
   }
 
   private static void resetQuiz() {
@@ -189,5 +207,28 @@ public class Quiz {
    */
   public static boolean isActive() {
     return quizIsActive;
+  }
+
+  /**
+   * Event if time is over and no answer was given.
+   *
+   * <p>Sets the label of the correct green, else red. Sends time over as answer to the end screen.
+   */
+  public static void timeOver() {
+    if (receivedAnAnswer) {
+      return;
+    }
+
+    receivedAnAnswer = true;
+    givenAnswer = "ZEIT ABGELAUFEN!";
+
+    char correctAnswer = quizAnswers.get(currentQuestion).correct().charAt(0);
+    Game.network().broadcast(new QuizEvent(String.valueOf(correctAnswer), true, true, false), true);
+
+    for (char option = 'a'; option <= 'd'; option++) {
+      if (option != correctAnswer) {
+        Game.network().broadcast(new QuizEvent(String.valueOf(option), false, true, false), true);
+      }
+    }
   }
 }

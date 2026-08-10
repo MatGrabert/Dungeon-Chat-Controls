@@ -17,6 +17,7 @@ import core.systems.input.InputSystem;
 import core.utils.Tuple;
 import quiz.Quiz;
 import systems.ChatMoveSystem;
+import systems.TimeSystem;
 
 /** Server for the ChatEscapeRoom. */
 public class ChatServer {
@@ -36,12 +37,12 @@ public class ChatServer {
         () -> {
           // DungeonLoader.addLevel(Tuple.of("level01", Level01.class));
           DungeonLoader.addLevel(Tuple.of("level02", Level02.class));
-          // Quiz.loadQuestions();
           CommandParser.loadCommands();
           Game.remove(InputSystem.class);
           Game.add(new ChatMoveSystem());
           Game.add(new MoveSystem());
           Game.add(new CollisionSystem());
+          Game.add(new TimeSystem(true));
 
           Game.network()
               .messageDispatcher()

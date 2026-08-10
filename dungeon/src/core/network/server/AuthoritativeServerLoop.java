@@ -258,7 +258,7 @@ public final class AuthoritativeServerLoop {
         HeroBuilder.builder()
             .username("ServerHero")
             .characterClass(CharacterClass.WIZARD)
-            .isLocalPlayer(false)
+            .isLocalPlayer(true)
             .build();
     hero.fetch(PositionComponent.class)
         .ifPresent(

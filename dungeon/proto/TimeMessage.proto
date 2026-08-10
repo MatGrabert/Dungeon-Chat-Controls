@@ -1,0 +1,12 @@
+
+syntax = "proto3";
+
+package dungeon.c2s;
+
+option java_multiple_files = true;
+option java_package = "core.network.proto";
+
+message TimeMessage {
+  string timerName = 1;
+  int32 time = 2;
+}

@@ -83,12 +83,12 @@ public class Level01 extends DungeonLevel {
     drawComponentBlue.tintColor(blue);
     drawComponentRed.tintColor(red);
 
-    redStone.add(new PositionComponent(new Point(6, 1)));
+    redStone.add(new PositionComponent(new Point(6, 7)));
     redStone.add(drawComponentBlue);
     redStone.add(new VelocityComponent(5.0f));
     redStone.add(new CollideComponent(Vector2.of(0.05f, 0.05f), Vector2.of(0.9f, 0.9f)));
 
-    blueStone.add(new PositionComponent(new Point(3, 1)));
+    blueStone.add(new PositionComponent(new Point(3, 7)));
     blueStone.add(drawComponentRed);
     blueStone.add(new VelocityComponent(5.0f));
     blueStone.add(new CollideComponent(Vector2.of(0.05f, 0.05f), Vector2.of(0.9f, 0.9f)));

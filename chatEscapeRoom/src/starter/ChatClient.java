@@ -6,9 +6,11 @@ import core.game.PreRunConfiguration;
 import core.network.messages.ChatMessage;
 import core.network.messages.QuizEvent;
 import core.network.messages.QuizMessage;
+import core.network.messages.TimeMessage;
 import core.network.messages.UIEvent;
 import java.util.Objects;
 import quiz.Quiz;
+import systems.TimeSystem;
 import ui.ChatUI;
 import ui.EndScreen;
 import ui.MenuUI;
@@ -32,6 +34,8 @@ public class ChatClient {
 
     Game.userOnSetup(
         () -> {
+          Game.add(new TimeSystem(false));
+
           Game.network()
               .messageDispatcher()
               .registerHandler(
@@ -105,12 +109,19 @@ public class ChatClient {
                     }
                   }));
 
+          Game.network()
+              .messageDispatcher()
+              .registerHandler(
+                  TimeMessage.class,
+                  ((session, message) -> {
+                    TimeSystem.setTimer(message.timerName(), message.time());
+                  }));
+
           CommandParser.loadCommands();
           createUIs();
           Quiz.loadQuestions(true);
         });
 
-    Game.frameRate(30);
     Game.windowTitle("ChatEscapeRoom");
     Game.run();
   }
