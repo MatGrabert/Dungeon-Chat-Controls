@@ -6,6 +6,7 @@ import core.components.PlayerComponent;
 import core.components.PositionComponent;
 import core.components.VelocityComponent;
 import core.utils.Direction;
+import core.utils.Point;
 import core.utils.Vector2;
 import core.utils.components.MissingComponentException;
 import java.util.ArrayDeque;
@@ -18,7 +19,8 @@ import java.util.Queue;
  */
 public class ChatMoveSystem extends System {
   private static final Queue<Direction> commandQueue = new ArrayDeque<>();
-  private static final int speed = 400;
+  private static final int speed = 5;
+  private Point targetPosition;
 
   /** Creates a new ChatMoveSystem. */
   public ChatMoveSystem() {
@@ -36,20 +38,67 @@ public class ChatMoveSystem extends System {
 
   @Override
   public void execute() {
-    Direction direction = commandQueue.poll();
+    filteredEntityStream()
+        .filter(entity -> entity.isPresent(PlayerComponent.class))
+        .forEach(this::makeNextStep);
+  }
 
-    if (direction != null) {
-      filteredEntityStream()
-          .filter(entity -> entity.isPresent(PlayerComponent.class))
-          .forEach(entity -> move(entity, direction));
+  private void makeNextStep(Entity entity) {
+    if (targetPosition != null) {
+      VelocityComponent velocityComponent =
+        entity
+          .fetch(VelocityComponent.class)
+          .orElseThrow(() -> MissingComponentException.build(entity, VelocityComponent.class));
+
+      if (reachedTarget(entity)) {
+        stop(entity);
+        targetPosition = null;
+      }
     } else {
-      filteredEntityStream()
-          .filter(entity -> entity.isPresent(PlayerComponent.class))
-          .forEach(this::stopEntity);
+      Direction direction = commandQueue.poll();
+      if (direction != null) {
+        targetPosition = calculateNextTarget(entity, direction);
+        move(entity, direction);
+      } else {
+        stop(entity);
+      }
     }
   }
 
-  private void stopEntity(Entity entity) {
+  private boolean reachedTarget(Entity entity) {
+    float maxDistance = 0.05f;
+
+    PositionComponent positionComponent =
+        entity
+            .fetch(PositionComponent.class)
+            .orElseThrow(() -> MissingComponentException.build(entity, PositionComponent.class));
+
+    float dx = positionComponent.position().x() - targetPosition.x();
+    float dy = positionComponent.position().y() - targetPosition.y();
+    float distance = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+    return distance < maxDistance;
+  }
+
+  private Point calculateNextTarget(Entity entity, Direction direction) {
+    PositionComponent positionComponent =
+        entity
+            .fetch(PositionComponent.class)
+            .orElseThrow(() -> MissingComponentException.build(entity, PositionComponent.class));
+
+    return switch (direction) {
+      case UP -> new Point(positionComponent.position().x(), positionComponent.position().y() + 1);
+      case RIGHT ->
+          new Point(positionComponent.position().x() + 1, positionComponent.position().y());
+      case DOWN ->
+          new Point(positionComponent.position().x(), positionComponent.position().y() - 1);
+      case LEFT ->
+          new Point(positionComponent.position().x() - 1, positionComponent.position().y());
+      case NONE -> null;
+    };
+  }
+
+  private void stop(Entity entity) {
     VelocityComponent velocityComponent =
         entity
             .fetch(VelocityComponent.class)
