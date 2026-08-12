@@ -12,9 +12,11 @@ import core.components.PositionComponent;
 import core.game.PreRunConfiguration;
 import core.level.loader.DungeonLoader;
 import core.network.messages.ChatMessage;
+import core.network.messages.TimeMessage;
 import core.systems.MoveSystem;
 import core.systems.input.InputSystem;
 import core.utils.Tuple;
+import mode.DemocracyMode;
 import quiz.Quiz;
 import systems.ChatMoveSystem;
 import systems.TimeSystem;
@@ -35,7 +37,7 @@ public class ChatServer {
 
     Game.userOnSetup(
         () -> {
-          // DungeonLoader.addLevel(Tuple.of("level01", Level01.class));
+          //DungeonLoader.addLevel(Tuple.of("level01", Level01.class));
           DungeonLoader.addLevel(Tuple.of("level02", Level02.class));
           CommandParser.loadCommands();
           Game.remove(InputSystem.class);
@@ -53,6 +55,15 @@ public class ChatServer {
                     CommandParser.parseChatInput(message.message());
                   });
 
+          Game.network()
+            .messageDispatcher()
+            .registerHandler(
+              TimeMessage.class,
+              (session, message) -> {
+                Game.network().broadcast(new TimeMessage(message.timerName(), TimeSystem.getTime(message.timerName())), true);
+              });
+
+          fillTimer();
           Quiz.loadQuestions(false);
         });
 
@@ -62,5 +73,16 @@ public class ChatServer {
     hero.add(new PositionComponent());
     hero.add(new PlayerComponent());
     Game.add(hero);
+  }
+
+  private static void fillTimer() {
+    TimeSystem.setTimer("gameTime", 3600);
+    TimeSystem.addServerCheckFunction("gameTime", Quiz::closeGameUIs);
+
+    TimeSystem.setTimer("modeTime", 0);
+    TimeSystem.addServerCheckFunction("modeTime", () -> {DemocracyMode.evaluate(); DemocracyMode.resetTimer();});
+
+    TimeSystem.setTimer("quizTime", 8000);
+    TimeSystem.addServerCheckFunction("quizTime", Quiz::timeOver);
   }
 }

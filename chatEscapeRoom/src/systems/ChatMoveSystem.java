@@ -21,6 +21,9 @@ public class ChatMoveSystem extends System {
   private static final Queue<Direction> commandQueue = new ArrayDeque<>();
   private static final int speed = 5;
   private Point targetPosition;
+  private Point lastPosition;
+  private int stuckCounter = 0;
+  private int stuckLimit = 5;
 
   /** Creates a new ChatMoveSystem. */
   public ChatMoveSystem() {
@@ -45,13 +48,15 @@ public class ChatMoveSystem extends System {
 
   private void makeNextStep(Entity entity) {
     if (targetPosition != null) {
-      VelocityComponent velocityComponent =
-        entity
-          .fetch(VelocityComponent.class)
-          .orElseThrow(() -> MissingComponentException.build(entity, VelocityComponent.class));
-
       if (reachedTarget(entity)) {
         stop(entity);
+        stuckCounter = 0;
+        lastPosition = null;
+        targetPosition = null;
+      } else if (stucks(entity)) {
+        stop(entity);
+        stuckCounter = 0;
+        lastPosition = null;
         targetPosition = null;
       }
     } else {
@@ -65,8 +70,34 @@ public class ChatMoveSystem extends System {
     }
   }
 
+  private boolean stucks(Entity entity) {
+    PositionComponent positionComponent =
+        entity
+            .fetch(PositionComponent.class)
+            .orElseThrow(() -> MissingComponentException.build(entity, PositionComponent.class));
+
+    if (lastPosition == null) {
+      lastPosition = positionComponent.position();
+      return false;
+    }
+
+    float dx = positionComponent.position().x() - lastPosition.x();
+    float dy = positionComponent.position().y() - lastPosition.y();
+    float distance = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+    if (distance < 0.05f) {
+      stuckCounter++;
+    } else {
+      stuckCounter = 0;
+    }
+
+    lastPosition = positionComponent.position();
+
+    return stuckCounter >= stuckLimit;
+  }
+
   private boolean reachedTarget(Entity entity) {
-    float maxDistance = 0.05f;
+    float maxDistance = 0.01f;
 
     PositionComponent positionComponent =
         entity
@@ -86,14 +117,14 @@ public class ChatMoveSystem extends System {
             .fetch(PositionComponent.class)
             .orElseThrow(() -> MissingComponentException.build(entity, PositionComponent.class));
 
+    int x = Math.round(positionComponent.position().x());
+    int y = Math.round(positionComponent.position().y());
+
     return switch (direction) {
-      case UP -> new Point(positionComponent.position().x(), positionComponent.position().y() + 1);
-      case RIGHT ->
-          new Point(positionComponent.position().x() + 1, positionComponent.position().y());
-      case DOWN ->
-          new Point(positionComponent.position().x(), positionComponent.position().y() - 1);
-      case LEFT ->
-          new Point(positionComponent.position().x() - 1, positionComponent.position().y());
+      case UP -> new Point(x, y + 1);
+      case RIGHT -> new Point(x + 1, y);
+      case DOWN -> new Point(x, y - 1);
+      case LEFT -> new Point(x - 1, y);
       case NONE -> null;
     };
   }

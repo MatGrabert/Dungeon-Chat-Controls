@@ -22,6 +22,18 @@ tasks.register('runChatEscapeRoom', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
+tasks.register('runChatClient', JavaExec) {
+    group 'starter'
+    mainClass = 'starter.ChatClient'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+tasks.register('runChatServer', JavaExec) {
+    group 'starter'
+    mainClass = 'starter.ChatServer'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 processResources {
     from new File(project(':dungeon').projectDir, '/assets')
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

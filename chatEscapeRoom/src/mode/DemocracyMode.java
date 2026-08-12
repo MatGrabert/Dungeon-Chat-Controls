@@ -3,6 +3,8 @@ package mode;
 import chat.CommandExecutor;
 import core.Game;
 import core.network.messages.TimeMessage;
+import systems.TimeSystem;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class DemocracyMode {
   /** Resets the mode time. */
   public static void resetTimer() {
     if (modeIsActive) {
-      Game.network().broadcast(new TimeMessage("mode", modeTime), true);
+      TimeSystem.setTimer("modeTime", modeTime);
     }
   }
 

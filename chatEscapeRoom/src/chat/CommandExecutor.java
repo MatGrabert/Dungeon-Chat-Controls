@@ -11,6 +11,8 @@ import java.util.Objects;
 import mode.DemocracyMode;
 import quiz.Quiz;
 import systems.ChatMoveSystem;
+import systems.TimeSystem;
+import ui.ChatUI;
 
 /**
  * Executes recognized chat commands.
@@ -61,7 +63,8 @@ public class CommandExecutor {
         if (Objects.equals(mode, "Anarchie")) {
           mode = "Demokratie";
           DemocracyMode.setModeIsActive(true);
-          Game.network().broadcast(new TimeMessage("mode", DemocracyMode.getModeTime()), true);
+          TimeSystem.setTimer("modeTime", DemocracyMode.getModeTime());
+          Game.network().broadcast(new TimeMessage("modeTime", DemocracyMode.getModeTime()), true);
         } else {
           DemocracyMode.setModeIsActive(false);
           mode = "Anarchie";

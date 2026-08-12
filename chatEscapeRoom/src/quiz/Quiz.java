@@ -169,9 +169,9 @@ public class Quiz {
   /** Starts the quiz timer of the both sides client and server. */
   public static void startTime() {
     // Sets server (own) timer
-    TimeSystem.setTimer("quiz", quizTime);
+    TimeSystem.setTimer("quizTime", quizTime);
     // Sets client timer
-    Game.network().broadcast(new TimeMessage("quiz", quizTime), true);
+    Game.network().broadcast(new TimeMessage("quizTime", quizTime), true);
   }
 
   /** Closes all game uis an opens the end screen. */
