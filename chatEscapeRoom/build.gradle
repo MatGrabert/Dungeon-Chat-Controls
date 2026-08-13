@@ -16,12 +16,6 @@ sourceSets.main.java.srcDirs = ['src/']
 sourceSets.main.resources.srcDirs = ['assets/']
 sourceSets.test.java.srcDirs = ['test/']
 
-tasks.register('runChatEscapeRoom', JavaExec) {
-    group 'starter'
-    mainClass = 'starter.ChatEscapeRoom'
-    classpath = sourceSets.main.runtimeClasspath
-}
-
 tasks.register('runChatClient', JavaExec) {
     group 'starter'
     mainClass = 'starter.ChatClient'

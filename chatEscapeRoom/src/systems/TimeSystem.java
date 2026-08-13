@@ -2,7 +2,6 @@ package systems;
 
 import core.System;
 import core.game.PreRunConfiguration;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -12,9 +11,9 @@ public class TimeSystem extends System {
   private static boolean isServer;
   private static final float deltaTime = 1f / PreRunConfiguration.frameRate();
   private static Map<String, Float> timer = new HashMap<>();
-  private static Map<String, Runnable> serverCheckFuntion = new HashMap<>();
+  private static Map<String, Runnable> serverCheckFunction = new HashMap<>();
   private static Map<String, Consumer<Integer>> clientUpdateFunction = new HashMap<>();
-  private static Map<String, Consumer<Integer>> serverUpdateFuntion = new HashMap<>();
+  private static Map<String, Consumer<Integer>> serverUpdateFunction = new HashMap<>();
   private static Map<String, Runnable> clientCheckFunction = new HashMap<>();
   private static Map<String, Boolean> timeOver = new HashMap<>();
   private static Consumer<String> synchronizeTimer;
@@ -37,7 +36,7 @@ public class TimeSystem extends System {
    * @return Time of the timer in seconds
    */
   public static int getTime(String timerName) {
-    if(timer.containsKey(timerName)) {
+    if (timer.containsKey(timerName)) {
       return timer.get(timerName).intValue();
     } else {
       return -1;
@@ -67,51 +66,51 @@ public class TimeSystem extends System {
   }
 
   private void reduceTime() {
-    for(String timerName : timer.keySet()) {
+    for (String timerName : timer.keySet()) {
       float time = timer.get(timerName);
 
-      if(time > 0) {
+      if (time > 0) {
         timer.put(timerName, (time - deltaTime));
       }
     }
   }
 
   private void updateClientTime() {
-    for(String timerName : timer.keySet()) {
-      if(clientUpdateFunction.containsKey(timerName)) {
+    for (String timerName : timer.keySet()) {
+      if (clientUpdateFunction.containsKey(timerName)) {
         clientUpdateFunction.get(timerName).accept(timer.get(timerName).intValue());
       }
-      if(timer.get(timerName) > MAX_TIME) {
+      if (timer.get(timerName) > MAX_TIME) {
         synchronizeTimer.accept(timerName);
       }
     }
   }
 
   private void checkServerTime() {
-    for(String timerName : timer.keySet()) {
-      if(!timeOver.get(timerName) && timer.get(timerName) <= 0) {
+    for (String timerName : timer.keySet()) {
+      if (!timeOver.get(timerName) && timer.get(timerName) <= 0) {
         timeOver.put(timerName, true);
 
-        if(serverCheckFuntion.containsKey(timerName)) {
-          serverCheckFuntion.get(timerName).run();
+        if (serverCheckFunction.containsKey(timerName)) {
+          serverCheckFunction.get(timerName).run();
         }
       }
     }
   }
 
   private void updateServerTime() {
-    for(String timerName : timer.keySet()) {
-      if(serverUpdateFuntion.containsKey(timerName)) {
-        serverUpdateFuntion.get(timerName).accept(timer.get(timerName).intValue());
+    for (String timerName : timer.keySet()) {
+      if (serverUpdateFunction.containsKey(timerName)) {
+        serverUpdateFunction.get(timerName).accept(timer.get(timerName).intValue());
       }
     }
   }
 
   private void checkClientTime() {
-    for(String timerName : timer.keySet()) {
-      if(!timeOver.get(timerName) && timer.get(timerName) <= 0) {
+    for (String timerName : timer.keySet()) {
+      if (!timeOver.get(timerName) && timer.get(timerName) <= 0) {
         timeOver.put(timerName, true);
-        if(clientCheckFunction.containsKey(timerName)) {
+        if (clientCheckFunction.containsKey(timerName)) {
           clientCheckFunction.get(timerName).run();
         }
       }
@@ -132,15 +131,16 @@ public class TimeSystem extends System {
   /**
    * Sets the server check function for a timer.
    *
-   * <p> The system checks if the timer for the function has expired. If the timer has expired, the function is triggered.
+   * <p>The system checks if the timer for the function has expired. If the timer has expired, the
+   * function is triggered.
    *
    * @param timerName The name of the timer
    * @param function Function of a server to be executed when the timer ends
    * @return True, if TimerSystem contains timer
    */
   public static boolean addServerCheckFunction(String timerName, Runnable function) {
-    if(timer.containsKey(timerName)) {
-      serverCheckFuntion.put(timerName, function);
+    if (timer.containsKey(timerName)) {
+      serverCheckFunction.put(timerName, function);
       return true;
     } else {
       return false;
@@ -150,14 +150,14 @@ public class TimeSystem extends System {
   /**
    * Sets the client update function for a timer.
    *
-   * <p> The function will be triggered every tick.
+   * <p>The function will be triggered every tick.
    *
    * @param timerName The name of the timer
    * @param function Function of a server to be executed when the timer ends
    * @return True, if TimerSystem contains timer
    */
   public static boolean addClientUpdateFunction(String timerName, Consumer<Integer> function) {
-    if(timer.containsKey(timerName)) {
+    if (timer.containsKey(timerName)) {
       clientUpdateFunction.put(timerName, function);
       return true;
     } else {
@@ -168,14 +168,15 @@ public class TimeSystem extends System {
   /**
    * Sets the client check function for a timer.
    *
-   * <p> The system checks if the timer for the function has expired. If the timer has expired, the function is triggered.
+   * <p>The system checks if the timer for the function has expired. If the timer has expired, the
+   * function is triggered.
    *
    * @param timerName The name of the timer
    * @param function Function of a server to be executed when the timer ends
    * @return True, if TimerSystem contains timer
    */
   public static boolean addClientCheckFunction(String timerName, Runnable function) {
-    if(timer.containsKey(timerName)) {
+    if (timer.containsKey(timerName)) {
       clientCheckFunction.put(timerName, function);
       return true;
     } else {
@@ -186,15 +187,15 @@ public class TimeSystem extends System {
   /**
    * Sets the server update function for a timer.
    *
-   * <p> The function will be triggered every tick.
+   * <p>The function will be triggered every tick.
    *
    * @param timerName The name of the timer
    * @param function Function of a server to be executed when the timer ends
    * @return True, if TimerSystem contains timer
    */
   public static boolean addServerUpdateFunction(String timerName, Consumer<Integer> function) {
-    if(timer.containsKey(timerName)) {
-      serverUpdateFuntion.put(timerName, function);
+    if (timer.containsKey(timerName)) {
+      serverUpdateFunction.put(timerName, function);
       return true;
     } else {
       return false;

@@ -1,13 +1,10 @@
 package mode;
 
 import chat.CommandExecutor;
-import core.Game;
-import core.network.messages.TimeMessage;
-import systems.TimeSystem;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import systems.TimeSystem;
 
 /** This mode collects all commands and executes the one with the most votes. */
 public class DemocracyMode {

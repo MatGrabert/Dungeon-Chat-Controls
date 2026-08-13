@@ -9,7 +9,6 @@ import core.network.messages.QuizMessage;
 import core.network.messages.TimeMessage;
 import core.network.messages.UIEvent;
 import java.util.Objects;
-
 import mode.DemocracyMode;
 import quiz.Quiz;
 import systems.TimeSystem;
@@ -140,26 +139,27 @@ public class ChatClient {
   }
 
   private static void fillTimer() {
-    if(!TimeSystem.addClientUpdateFunction("modeTime", ChatUI::setModeTimeLabel)) {
+    if (!TimeSystem.addClientUpdateFunction("modeTime", ChatUI::setModeTimeLabel)) {
       TimeSystem.setTimer("modeTime", 0);
       TimeSystem.addClientUpdateFunction("modeTime", ChatUI::setModeTimeLabel);
     }
-    if(!TimeSystem.addClientCheckFunction("modeTime", DemocracyMode::resetTimer)) {
+    if (!TimeSystem.addClientCheckFunction("modeTime", DemocracyMode::resetTimer)) {
       TimeSystem.setTimer("modeTime", 0);
       TimeSystem.addClientCheckFunction("modeTime", DemocracyMode::resetTimer);
     }
-    if(!TimeSystem.addClientUpdateFunction("gameTime", ChatUI::setGameTimeLabel)) {
+    if (!TimeSystem.addClientUpdateFunction("gameTime", ChatUI::setGameTimeLabel)) {
       TimeSystem.setTimer("gameTime", 9999);
       TimeSystem.setSynchronizeTimer(ChatClient::synchronizeTimer);
       TimeSystem.addClientUpdateFunction("gameTime", ChatUI::setGameTimeLabel);
     }
-    if(!TimeSystem.addClientUpdateFunction("quizTime", QuizUI::setTimerLabel)) {
+    if (!TimeSystem.addClientUpdateFunction("quizTime", QuizUI::setTimerLabel)) {
       TimeSystem.setTimer("quizTime", 8000);
       TimeSystem.addClientUpdateFunction("quizTime", QuizUI::setTimerLabel);
     }
   }
 
   private static void synchronizeTimer(String timerName) {
-    Game.network().send((short) Game.network().assignedClientId(), new TimeMessage(timerName, 0), true);
+    Game.network()
+        .send((short) Game.network().assignedClientId(), new TimeMessage(timerName, 0), true);
   }
 }

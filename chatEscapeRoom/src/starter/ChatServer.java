@@ -37,7 +37,7 @@ public class ChatServer {
 
     Game.userOnSetup(
         () -> {
-          //DungeonLoader.addLevel(Tuple.of("level01", Level01.class));
+          // DungeonLoader.addLevel(Tuple.of("level01", Level01.class));
           DungeonLoader.addLevel(Tuple.of("level02", Level02.class));
           CommandParser.loadCommands();
           Game.remove(InputSystem.class);
@@ -56,12 +56,16 @@ public class ChatServer {
                   });
 
           Game.network()
-            .messageDispatcher()
-            .registerHandler(
-              TimeMessage.class,
-              (session, message) -> {
-                Game.network().broadcast(new TimeMessage(message.timerName(), TimeSystem.getTime(message.timerName())), true);
-              });
+              .messageDispatcher()
+              .registerHandler(
+                  TimeMessage.class,
+                  (session, message) -> {
+                    Game.network()
+                        .broadcast(
+                            new TimeMessage(
+                                message.timerName(), TimeSystem.getTime(message.timerName())),
+                            true);
+                  });
 
           fillTimer();
           Quiz.loadQuestions(false);
@@ -80,7 +84,12 @@ public class ChatServer {
     TimeSystem.addServerCheckFunction("gameTime", Quiz::closeGameUIs);
 
     TimeSystem.setTimer("modeTime", 0);
-    TimeSystem.addServerCheckFunction("modeTime", () -> {DemocracyMode.evaluate(); DemocracyMode.resetTimer();});
+    TimeSystem.addServerCheckFunction(
+        "modeTime",
+        () -> {
+          DemocracyMode.evaluate();
+          DemocracyMode.resetTimer();
+        });
 
     TimeSystem.setTimer("quizTime", 8000);
     TimeSystem.addServerCheckFunction("quizTime", Quiz::timeOver);

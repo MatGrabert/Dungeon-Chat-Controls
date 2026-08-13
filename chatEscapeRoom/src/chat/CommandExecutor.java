@@ -12,7 +12,6 @@ import mode.DemocracyMode;
 import quiz.Quiz;
 import systems.ChatMoveSystem;
 import systems.TimeSystem;
-import ui.ChatUI;
 
 /**
  * Executes recognized chat commands.
