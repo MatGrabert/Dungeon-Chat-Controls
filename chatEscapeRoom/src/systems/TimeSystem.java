@@ -8,16 +8,16 @@ import java.util.function.Consumer;
 
 /** System for time events. */
 public class TimeSystem extends System {
-  private static boolean isServer;
-  private static final float deltaTime = 1f / PreRunConfiguration.frameRate();
-  private static Map<String, Float> timer = new HashMap<>();
-  private static Map<String, Runnable> serverCheckFunction = new HashMap<>();
-  private static Map<String, Consumer<Integer>> clientUpdateFunction = new HashMap<>();
-  private static Map<String, Consumer<Integer>> serverUpdateFunction = new HashMap<>();
-  private static Map<String, Runnable> clientCheckFunction = new HashMap<>();
-  private static Map<String, Boolean> timeOver = new HashMap<>();
+  private final boolean isServer;
+  private final float deltaTime = 1f / PreRunConfiguration.frameRate();
+  private static final Map<String, Float> timer = new HashMap<>();
+  private static final Map<String, Runnable> serverCheckFunction = new HashMap<>();
+  private static final Map<String, Consumer<Integer>> clientUpdateFunction = new HashMap<>();
+  private static final Map<String, Consumer<Integer>> serverUpdateFunction = new HashMap<>();
+  private static final Map<String, Runnable> clientCheckFunction = new HashMap<>();
+  private static final Map<String, Boolean> timeOver = new HashMap<>();
   private static Consumer<String> synchronizeTimer;
-  private static final int MAX_TIME = 9000;
+  private final int MAX_TIME = 9000;
 
   /**
    * Creates a TimeSystem.
@@ -26,7 +26,7 @@ public class TimeSystem extends System {
    */
   public TimeSystem(boolean isServer) {
     super(AuthoritativeSide.BOTH);
-    TimeSystem.isServer = isServer;
+    this.isServer = isServer;
   }
 
   /**

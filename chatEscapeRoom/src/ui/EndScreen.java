@@ -15,8 +15,8 @@ import core.Game;
 public class EndScreen {
   private static Table rootTable;
   private static TextButton quitGameButton;
-  private static Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-  private static Table tableInner = new Table();
+  private static final Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+  private static final Table tableInner = new Table();
 
   /**
    * Creates an end-screen.
@@ -66,7 +66,7 @@ public class EndScreen {
    *
    * @param visible True or false
    */
-  public static void setEndScreenVisible(Boolean visible) {
+  public static void setEndScreenVisible(boolean visible) {
     rootTable.setVisible(visible);
   }
 

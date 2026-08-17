@@ -19,7 +19,7 @@ import ui.QuizUI;
 
 /** Client for the ChatEscapeRoom. */
 public class ChatClient {
-  private static ChatUI chatUI = new ChatUI();
+  private static final ChatUI chatUI = new ChatUI();
 
   /**
    * Starts chat client
@@ -36,99 +36,116 @@ public class ChatClient {
     Game.userOnSetup(
         () -> {
           Game.add(new TimeSystem(false));
-
-          Game.network()
-              .messageDispatcher()
-              .registerHandler(
-                  ChatMessage.class,
-                  ((session, message) -> {
-                    chatUI.addMessage((short) message.playerID(), message.message());
-                  }));
-
-          Game.network()
-              .messageDispatcher()
-              .registerHandler(
-                  UIEvent.class,
-                  ((session, message) -> {
-                    switch (message.event()) {
-                      case "menu open" -> MenuUI.setMenuVisible(true);
-                      case "menu close" -> MenuUI.setMenuVisible(false);
-                      case "menu next" -> {
-                        if (MenuUI.getGameMode().equals("Anarchie")) {
-                          MenuUI.setGameMode("Demokratie");
-                          DemocracyMode.setModeIsActive(true);
-                        } else {
-                          MenuUI.setGameMode("Anarchie");
-                          DemocracyMode.setModeIsActive(false);
-                        }
-                      }
-                      case "quiz open" -> QuizUI.setQuizVisible(true);
-                      case "quiz close" -> QuizUI.setQuizVisible(false);
-                      case "endscreen open" -> EndScreen.setEndScreenVisible(true);
-                      case "chat close" -> chatUI.setChatUIVisible(false);
-                    }
-                  }));
-
-          Game.network()
-              .messageDispatcher()
-              .registerHandler(
-                  QuizEvent.class,
-                  (((session, message) -> {
-                    if (Objects.equals(message.answer(), "r")) {
-                      QuizUI.setAnswerAVisible(true);
-                      QuizUI.setAnswerBVisible(true);
-                      QuizUI.setAnswerCVisible(true);
-                      QuizUI.setAnswerDVisible(true);
-                      QuizUI.setAnswerColor('r', true);
-                    } else {
-                      if (message.changeColor()) {
-                        switch (message.answer()) {
-                          case "a" -> QuizUI.setAnswerColor('a', message.correct());
-                          case "b" -> QuizUI.setAnswerColor('b', message.correct());
-                          case "c" -> QuizUI.setAnswerColor('c', message.correct());
-                          case "d" -> QuizUI.setAnswerColor('d', message.correct());
-                        }
-                      } else {
-                        switch (message.answer()) {
-                          case "a" -> QuizUI.setAnswerAVisible(message.setVisible());
-                          case "b" -> QuizUI.setAnswerBVisible(message.setVisible());
-                          case "c" -> QuizUI.setAnswerCVisible(message.setVisible());
-                          case "d" -> QuizUI.setAnswerDVisible(message.setVisible());
-                        }
-                      }
-                    }
-                  })));
-
-          Game.network()
-              .messageDispatcher()
-              .registerHandler(
-                  QuizMessage.class,
-                  ((session, message) -> {
-                    if (message.forEndScreen()) {
-                      EndScreen.addResultLabels(
-                          message.question(), message.answers().getFirst(), message.correct());
-                    } else {
-                      QuizUI.fillQuizUI(message.question(), message.answers());
-                    }
-                  }));
-
-          Game.network()
-              .messageDispatcher()
-              .registerHandler(
-                  TimeMessage.class,
-                  ((session, message) -> {
-                    TimeSystem.setTimer(message.timerName(), message.time());
-                  }));
-
+          registerMessageHandler();
           CommandParser.loadCommands();
           createUIs();
           Quiz.loadQuestions(true);
-
           fillTimer();
         });
 
     Game.windowTitle("ChatEscapeRoom");
     Game.run();
+  }
+
+  private static void registerMessageHandler() {
+    registerChatHandler();
+    registerUIHandler();
+    registerQuizEventHandler();
+    registerQuizMessageHandler();
+    registerTimeHandler();
+  }
+
+  private static void registerTimeHandler() {
+    Game.network()
+        .messageDispatcher()
+        .registerHandler(
+            TimeMessage.class,
+            ((session, message) -> {
+              TimeSystem.setTimer(message.timerName(), message.time());
+            }));
+  }
+
+  private static void registerQuizMessageHandler() {
+    Game.network()
+        .messageDispatcher()
+        .registerHandler(
+            QuizMessage.class,
+            ((session, message) -> {
+              if (message.forEndScreen()) {
+                EndScreen.addResultLabels(
+                    message.question(), message.answers().getFirst(), message.correct());
+              } else {
+                QuizUI.fillQuizUI(message.question(), message.answers());
+              }
+            }));
+  }
+
+  private static void registerQuizEventHandler() {
+    Game.network()
+        .messageDispatcher()
+        .registerHandler(
+            QuizEvent.class,
+            (((session, message) -> {
+              if (Objects.equals(message.answer(), "r")) {
+                QuizUI.setAnswerAVisible(true);
+                QuizUI.setAnswerBVisible(true);
+                QuizUI.setAnswerCVisible(true);
+                QuizUI.setAnswerDVisible(true);
+                QuizUI.setAnswerColor('r', true);
+              } else {
+                if (message.changeColor()) {
+                  switch (message.answer()) {
+                    case "a" -> QuizUI.setAnswerColor('a', message.correct());
+                    case "b" -> QuizUI.setAnswerColor('b', message.correct());
+                    case "c" -> QuizUI.setAnswerColor('c', message.correct());
+                    case "d" -> QuizUI.setAnswerColor('d', message.correct());
+                  }
+                } else {
+                  switch (message.answer()) {
+                    case "a" -> QuizUI.setAnswerAVisible(message.setVisible());
+                    case "b" -> QuizUI.setAnswerBVisible(message.setVisible());
+                    case "c" -> QuizUI.setAnswerCVisible(message.setVisible());
+                    case "d" -> QuizUI.setAnswerDVisible(message.setVisible());
+                  }
+                }
+              }
+            })));
+  }
+
+  private static void registerUIHandler() {
+    Game.network()
+        .messageDispatcher()
+        .registerHandler(
+            UIEvent.class,
+            ((session, message) -> {
+              switch (message.event()) {
+                case "menu open" -> MenuUI.setMenuVisible(true);
+                case "menu close" -> MenuUI.setMenuVisible(false);
+                case "menu next" -> {
+                  if (MenuUI.getGameMode().equals("Anarchie")) {
+                    MenuUI.setGameMode("Demokratie");
+                    DemocracyMode.setModeIsActive(true);
+                  } else {
+                    MenuUI.setGameMode("Anarchie");
+                    DemocracyMode.setModeIsActive(false);
+                  }
+                }
+                case "quiz open" -> QuizUI.setQuizVisible(true);
+                case "quiz close" -> QuizUI.setQuizVisible(false);
+                case "endscreen open" -> EndScreen.setEndScreenVisible(true);
+                case "chat close" -> chatUI.setChatUIVisible(false);
+              }
+            }));
+  }
+
+  private static void registerChatHandler() {
+    Game.network()
+        .messageDispatcher()
+        .registerHandler(
+            ChatMessage.class,
+            ((session, message) -> {
+              chatUI.addMessage((short) message.playerID(), message.message());
+            }));
   }
 
   private static void createUIs() {

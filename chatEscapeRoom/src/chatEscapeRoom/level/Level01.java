@@ -21,12 +21,10 @@ import java.util.Map;
 /** Level 1 includes a puzzle. */
 public class Level01 extends DungeonLevel {
   private ExitTile exit;
-  private Point redTilePoint = new Point(6, 1);
-  private Point blueTilePoint = new Point(3, 1);
-  private Entity redStone = new Entity();
-  private Entity blueStone = new Entity();
-  private int blue = 0x0000FFFF;
-  private int red = 0xFF0000FF;
+  private final Point redTilePoint = new Point(6, 1);
+  private final Point blueTilePoint = new Point(3, 1);
+  private final Entity redStone = new Entity();
+  private final Entity blueStone = new Entity();
 
   /**
    * Creates level 1.
@@ -54,19 +52,15 @@ public class Level01 extends DungeonLevel {
   }
 
   private boolean missionAccomplished() {
-    boolean accomplished = false;
-
     Point blueStonePoint = this.blueStone.fetch(PositionComponent.class).get().position();
     Point redStonePoint = this.redStone.fetch(PositionComponent.class).get().position();
 
-    if (blueStonePoint.equals(blueTilePoint) && redStonePoint.equals(redTilePoint)) {
-      accomplished = true;
-    }
-
-    return accomplished;
+    return blueStonePoint.equals(blueTilePoint) && redStonePoint.equals(redTilePoint);
   }
 
   private void createObjects() {
+    int red = 0xFF0000FF;
+    int blue = 0x0000FFFF;
     Entity vase1 = null;
     Entity vase2 = null;
 
@@ -84,12 +78,12 @@ public class Level01 extends DungeonLevel {
     drawComponentRed.tintColor(red);
 
     redStone.add(new PositionComponent(new Point(6, 7)));
-    redStone.add(drawComponentBlue);
     redStone.add(new VelocityComponent(5.0f));
     redStone.add(new CollideComponent(Vector2.of(0.05f, 0.05f), Vector2.of(0.9f, 0.9f)));
-
-    blueStone.add(new PositionComponent(new Point(3, 7)));
+    redStone.add(drawComponentBlue);
+    // Swapped because the entity rendering order does not match the corresponding puzzle tiles.
     blueStone.add(drawComponentRed);
+    blueStone.add(new PositionComponent(new Point(3, 7)));
     blueStone.add(new VelocityComponent(5.0f));
     blueStone.add(new CollideComponent(Vector2.of(0.05f, 0.05f), Vector2.of(0.9f, 0.9f)));
 

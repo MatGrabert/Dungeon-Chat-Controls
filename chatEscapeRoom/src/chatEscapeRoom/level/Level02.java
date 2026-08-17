@@ -14,7 +14,6 @@ import java.util.Map;
 /** Level 1 includes a quiz. */
 public class Level02 extends DungeonLevel {
   private ExitTile exit;
-  private Entity quizMaster;
 
   /**
    * Creates level 1.
@@ -35,8 +34,7 @@ public class Level02 extends DungeonLevel {
   }
 
   private void createQuizMaster() {
-    quizMaster = new Entity();
-    quizMaster = NPCFactory.createNPC(new Point(3.5f, 4.5f), "character/char03");
+    Entity quizMaster = NPCFactory.createNPC(new Point(3.5f, 4.5f), "character/char03");
     quizMaster.add(new QuizNpcComponent());
     Game.add(quizMaster);
   }

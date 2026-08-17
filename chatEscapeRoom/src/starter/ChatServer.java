@@ -1,14 +1,10 @@
 package starter;
 
 import chat.CommandParser;
+import chatEscapeRoom.level.Level01;
 import chatEscapeRoom.level.Level02;
-import contrib.components.CollideComponent;
-import contrib.entities.EntityFactory;
 import contrib.systems.CollisionSystem;
-import core.Entity;
 import core.Game;
-import core.components.PlayerComponent;
-import core.components.PositionComponent;
 import core.game.PreRunConfiguration;
 import core.level.loader.DungeonLoader;
 import core.network.messages.ChatMessage;
@@ -23,7 +19,6 @@ import systems.TimeSystem;
 
 /** Server for the ChatEscapeRoom. */
 public class ChatServer {
-  private static Entity hero;
 
   /**
    * Starts chat server
@@ -37,46 +32,46 @@ public class ChatServer {
 
     Game.userOnSetup(
         () -> {
-          // DungeonLoader.addLevel(Tuple.of("level01", Level01.class));
+          DungeonLoader.addLevel(Tuple.of("level01", Level01.class));
           DungeonLoader.addLevel(Tuple.of("level02", Level02.class));
           CommandParser.loadCommands();
-          Game.remove(InputSystem.class);
-          Game.add(new ChatMoveSystem());
-          Game.add(new MoveSystem());
-          Game.add(new CollisionSystem());
-          Game.add(new TimeSystem(true));
-
-          Game.network()
-              .messageDispatcher()
-              .registerHandler(
-                  ChatMessage.class,
-                  (session, message) -> {
-                    Game.network().broadcast(message, true);
-                    CommandParser.parseChatInput(message.message());
-                  });
-
-          Game.network()
-              .messageDispatcher()
-              .registerHandler(
-                  TimeMessage.class,
-                  (session, message) -> {
-                    Game.network()
-                        .broadcast(
-                            new TimeMessage(
-                                message.timerName(), TimeSystem.getTime(message.timerName())),
-                            true);
-                  });
-
+          addSystems();
+          registerMessageHandler();
           fillTimer();
           Quiz.loadQuestions(false);
         });
 
     Game.run();
-    hero = EntityFactory.newHero();
-    hero.add(new CollideComponent());
-    hero.add(new PositionComponent());
-    hero.add(new PlayerComponent());
-    Game.add(hero);
+  }
+
+  private static void addSystems() {
+    Game.remove(InputSystem.class);
+    Game.add(new MoveSystem());
+    Game.add(new CollisionSystem());
+    Game.add(new ChatMoveSystem());
+    Game.add(new TimeSystem(true));
+  }
+
+  private static void registerMessageHandler() {
+    Game.network()
+        .messageDispatcher()
+        .registerHandler(
+            ChatMessage.class,
+            (session, message) -> {
+              Game.network().broadcast(message, true);
+              CommandParser.parseChatInput(message.message());
+            });
+
+    Game.network()
+        .messageDispatcher()
+        .registerHandler(
+            TimeMessage.class,
+            (session, message) -> {
+              Game.network()
+                  .broadcast(
+                      new TimeMessage(message.timerName(), TimeSystem.getTime(message.timerName())),
+                      true);
+            });
   }
 
   private static void fillTimer() {

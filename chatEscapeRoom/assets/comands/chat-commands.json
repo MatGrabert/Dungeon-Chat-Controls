@@ -44,9 +44,6 @@
     "game": {
         "action": {
             "aliases": ["e", "aktion"]
-        },
-        "notice": {
-            "aliases": ["h", "hinweis", "hinweiskarte"]
         }
     }
 }

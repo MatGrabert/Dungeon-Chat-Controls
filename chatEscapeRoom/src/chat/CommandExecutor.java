@@ -1,5 +1,6 @@
 package chat;
 
+import components.CommandComponent;
 import contrib.components.QuizNpcComponent;
 import core.Game;
 import core.components.PositionComponent;
@@ -10,7 +11,6 @@ import core.utils.Point;
 import java.util.Objects;
 import mode.DemocracyMode;
 import quiz.Quiz;
-import systems.ChatMoveSystem;
 import systems.TimeSystem;
 
 /**
@@ -46,7 +46,19 @@ public class CommandExecutor {
           case "right" -> Direction.RIGHT;
           default -> throw new IllegalStateException("Unexpected value: " + action);
         };
-    ChatMoveSystem.addCommand(direction);
+
+    Game.player()
+        .ifPresent(
+            player -> {
+              CommandComponent commandComponent = player.fetch(CommandComponent.class).orElse(null);
+
+              if (commandComponent == null) {
+                commandComponent = new CommandComponent();
+                player.add(commandComponent);
+              }
+
+              commandComponent.addCommand(direction);
+            });
   }
 
   private static void handleQuiz(String action) {

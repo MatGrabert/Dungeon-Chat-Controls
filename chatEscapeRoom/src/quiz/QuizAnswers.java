@@ -8,14 +8,4 @@ import java.util.List;
  * @param answers All possible answers
  * @param correct The correct answer
  */
-public record QuizAnswers(List<String> answers, String correct) {
-  @Override
-  public List<String> answers() {
-    return answers;
-  }
-
-  @Override
-  public String correct() {
-    return correct;
-  }
-}
+public record QuizAnswers(List<String> answers, String correct) {}

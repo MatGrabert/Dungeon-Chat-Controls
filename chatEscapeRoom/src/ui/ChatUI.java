@@ -33,7 +33,7 @@ public class ChatUI {
   private static Label modeTimeLabel;
   private static Label gameTimeLabel;
   private Table rootTable;
-  Table infoTable;
+  private Table infoTable;
 
   /**
    * Sets the time for the mode time.
@@ -241,7 +241,7 @@ public class ChatUI {
    *
    * @param visible True if invisible
    */
-  public void setChatUIVisible(Boolean visible) {
+  public void setChatUIVisible(boolean visible) {
     rootTable.setVisible(visible);
   }
 }

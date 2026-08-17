@@ -1,5 +1,6 @@
 package systems;
 
+import components.CommandComponent;
 import core.Entity;
 import core.System;
 import core.components.PlayerComponent;
@@ -9,8 +10,6 @@ import core.utils.Direction;
 import core.utils.Point;
 import core.utils.Vector2;
 import core.utils.components.MissingComponentException;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 /**
  * System for processing movement commands from the chat.
@@ -18,7 +17,6 @@ import java.util.Queue;
  * <p>Movement commands are buffered in a queue and processed during the next system cycle.
  */
 public class ChatMoveSystem extends System {
-  private static final Queue<Direction> commandQueue = new ArrayDeque<>();
   private static final int speed = 5;
   private Point targetPosition;
   private Point lastPosition;
@@ -27,22 +25,18 @@ public class ChatMoveSystem extends System {
 
   /** Creates a new ChatMoveSystem. */
   public ChatMoveSystem() {
-    super(PlayerComponent.class, VelocityComponent.class, PositionComponent.class);
-  }
-
-  /**
-   * Adds a movement command to the queue-
-   *
-   * @param direction The direction of the movement to execute.
-   */
-  public static void addCommand(Direction direction) {
-    commandQueue.add(direction);
+    super(
+        PlayerComponent.class,
+        VelocityComponent.class,
+        PositionComponent.class,
+        CommandComponent.class);
   }
 
   @Override
   public void execute() {
     filteredEntityStream()
         .filter(entity -> entity.isPresent(PlayerComponent.class))
+        .filter(this::isCurrentPlayer)
         .forEach(this::makeNextStep);
   }
 
@@ -60,7 +54,12 @@ public class ChatMoveSystem extends System {
         targetPosition = null;
       }
     } else {
-      Direction direction = commandQueue.poll();
+      CommandComponent commandComponent =
+          entity
+              .fetch(CommandComponent.class)
+              .orElseThrow(() -> MissingComponentException.build(entity, CommandComponent.class));
+
+      Direction direction = commandComponent.poll();
       if (direction != null) {
         targetPosition = calculateNextTarget(entity, direction);
         move(entity, direction);
@@ -76,13 +75,15 @@ public class ChatMoveSystem extends System {
             .fetch(PositionComponent.class)
             .orElseThrow(() -> MissingComponentException.build(entity, PositionComponent.class));
 
+    Point currentPosition = positionComponent.position();
+
     if (lastPosition == null) {
       lastPosition = positionComponent.position();
       return false;
     }
 
-    float dx = positionComponent.position().x() - lastPosition.x();
-    float dy = positionComponent.position().y() - lastPosition.y();
+    float dx = currentPosition.x() - lastPosition.x();
+    float dy = currentPosition.y() - lastPosition.y();
     float distance = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
     if (distance < 0.05f) {
@@ -154,5 +155,22 @@ public class ChatMoveSystem extends System {
         };
 
     velocityComponent.currentVelocity(velocity);
+  }
+
+  /*
+   * Prevents a wrong player from being viewed.
+   */
+  private boolean isCurrentPlayer(Entity entity) {
+    PositionComponent positionComponent =
+        entity
+            .fetch(PositionComponent.class)
+            .orElseThrow(() -> MissingComponentException.build(entity, PositionComponent.class));
+
+    Boolean xIsNotMinValue = positionComponent.position().x() != Integer.MIN_VALUE;
+    Boolean yIsNotMinValue = positionComponent.position().y() != Integer.MIN_VALUE;
+    Boolean xIsNotMaxValue = positionComponent.position().x() != Integer.MAX_VALUE;
+    Boolean yIsNotMaxValue = positionComponent.position().y() != Integer.MAX_VALUE;
+
+    return xIsNotMinValue && xIsNotMaxValue && yIsNotMinValue && yIsNotMaxValue;
   }
 }
